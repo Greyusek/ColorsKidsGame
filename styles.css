@@ -354,8 +354,7 @@ button {
 
 .shape-shell,
 .shape-inner,
-.fill-window,
-.shape-color {
+.fill-window {
   position: absolute;
   clip-path: var(--shape-path);
 }
@@ -379,6 +378,7 @@ button {
 }
 
 .shape-color {
+  position: absolute;
   inset: auto 0 0;
   height: var(--fill-progress, 0%);
   background: var(--round-color, #ef476f);

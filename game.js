@@ -116,6 +116,21 @@ function playRoundBell() {
   });
 }
 
+function playTimerTick() {
+  if (!audioContext || audioContext.state !== "running") return;
+
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = "square";
+  oscillator.frequency.setValueAtTime(1_100, now);
+  gain.gain.setValueAtTime(0.045, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.05);
+}
+
 function renderDots() {
   dom.progressDots.replaceChildren();
   rounds.forEach((round, index) => {
@@ -190,6 +205,8 @@ async function startRound(token) {
   if (token !== gameToken) return;
   dom.liveStatus.textContent = `Раунд ${currentRound + 1}. Назовите цвет по-английски.`;
   const startedAt = performance.now();
+  let previousSeconds = 15;
+  playTimerTick();
 
   function tick(now) {
     if (token !== gameToken) return;
@@ -200,6 +217,10 @@ async function startRound(token) {
     setFillProgress(progress);
     dom.timerValue.textContent = String(secondsLeft);
     dom.timer.setAttribute("aria-label", `Осталось ${secondsLeft} секунд`);
+    if (secondsLeft < previousSeconds && secondsLeft > 0) {
+      playTimerTick();
+      previousSeconds = secondsLeft;
+    }
 
     if (progress < 1) {
       frameId = requestAnimationFrame(tick);
