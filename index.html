@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Детская игра для изучения названий цветов на английском языке"
+    />
+    <meta name="theme-color" content="#20306b" />
+    <title>Игра «Цвета»</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2320306b'/%3E%3Ccircle cx='32' cy='32' r='21' fill='%23ffd84a'/%3E%3Cpath d='M41 22a15 15 0 1 0 0 20' fill='none' stroke='%23ef476f' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="game-header">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <p class="eyebrow">Играем и учимся</p>
+          <h1>Цвета <span>Colors</span></h1>
+        </div>
+        <div class="round-counter" id="roundCounter" aria-label="Номер раунда">
+          <strong>—</strong><span>/ 9</span>
+        </div>
+      </header>
+
+      <section class="game-card" aria-labelledby="instruction">
+        <div class="decor decor-one" aria-hidden="true"></div>
+        <div class="decor decor-two" aria-hidden="true"></div>
+
+        <div class="start-screen screen is-active" id="startScreen">
+          <div class="start-shapes" aria-hidden="true">
+            <i class="mini-shape mini-circle"></i>
+            <i class="mini-shape mini-triangle"></i>
+            <i class="mini-shape mini-square"></i>
+          </div>
+          <h2>Угадай цвет!</h2>
+          <p>Назови цвет по-английски, пока фигура закрашивается.</p>
+          <button class="primary-button" id="startButton" type="button">
+            <span>Старт</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="play-screen screen" id="playScreen">
+          <div class="prompt-row">
+            <div>
+              <p class="prompt-kicker">Смотри внимательно</p>
+              <h2 id="instruction">Какой это цвет?</h2>
+            </div>
+
+            <div class="timer" id="timer" aria-label="Осталось 15 секунд">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="timer-track" cx="50" cy="50" r="43"></circle>
+                <circle class="timer-progress" cx="50" cy="50" r="43"></circle>
+              </svg>
+              <span id="timerValue">15</span>
+            </div>
+          </div>
+
+          <div class="artwork-area" id="artworkArea" aria-label="Закрашивающаяся фигура">
+            <div class="css-artwork" id="cssArtwork" aria-hidden="true">
+              <div class="shape-shell"></div>
+              <div class="shape-inner"></div>
+              <div class="fill-window" id="fillWindow">
+                <div class="shape-color" id="shapeColor"></div>
+              </div>
+            </div>
+            <canvas class="png-artwork" id="pngArtwork" width="520" height="520" aria-hidden="true"></canvas>
+            <div class="answer" id="answer" aria-live="polite">
+              <strong id="answerEnglish"></strong>
+              <span id="answerRussian"></span>
+            </div>
+          </div>
+
+          <div class="progress-dots" id="progressDots" aria-label="Прогресс игры"></div>
+        </div>
+
+        <div class="finish-screen screen" id="finishScreen">
+          <div class="finish-burst" aria-hidden="true">★</div>
+          <p class="prompt-kicker">Все 9 цветов пройдены</p>
+          <h2>Отличная работа!</h2>
+          <p>Сыграем ещё раз? Цвета снова перемешаются.</p>
+          <button class="primary-button" id="restartButton" type="button">
+            <span>Рестарт</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3z" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <p class="teacher-note">Каждый раунд длится 15 секунд</p>
+      <div class="sr-only" id="liveStatus" aria-live="assertive"></div>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
