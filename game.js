@@ -62,6 +62,7 @@ let rounds = [];
 let currentRound = 0;
 let frameId = 0;
 let transitionTimer = 0;
+let speechTimer = 0;
 let audioContext = null;
 let activePngRenderer = null;
 let gameToken = 0;
@@ -133,6 +134,24 @@ function playTimerTick() {
   oscillator.stop(now + 0.05);
 }
 
+function speakColorName(color) {
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(color.english.toLowerCase());
+  utterance.lang = "en-US";
+  utterance.rate = 0.82;
+  utterance.pitch = 1.05;
+  utterance.volume = 1;
+
+  const englishVoice = window.speechSynthesis
+    .getVoices()
+    .find((voice) => voice.lang.toLowerCase().startsWith("en"));
+  if (englishVoice) utterance.voice = englishVoice;
+
+  window.speechSynthesis.speak(utterance);
+}
+
 function renderDots() {
   dom.progressDots.replaceChildren();
   rounds.forEach((round, index) => {
@@ -176,6 +195,8 @@ function setFillProgress(progress) {
 async function startGame() {
   cancelAnimationFrame(frameId);
   clearTimeout(transitionTimer);
+  clearTimeout(speechTimer);
+  window.speechSynthesis?.cancel();
   initAudio();
   gameToken += 1;
   rounds = buildRounds();
@@ -189,12 +210,11 @@ async function startRound(token) {
 
   const round = rounds[currentRound];
   dom.answer.classList.remove("is-visible");
+  dom.answerEnglish.textContent = "";
+  dom.answerRussian.textContent = "";
   dom.roundCounter.innerHTML = `<strong>${currentRound + 1}</strong><span>/ ${rounds.length}</span>`;
   dom.timerValue.textContent = String(ROUND_DURATION_SECONDS);
   dom.timer.setAttribute("aria-label", `Осталось ${ROUND_DURATION_SECONDS} секунд`);
-  dom.answerEnglish.textContent = round.color.english;
-  dom.answerRussian.textContent = round.color.russian;
-  dom.answer.style.setProperty("--answer-color", round.color.answerValue || round.color.value);
   renderDots();
 
   try {
@@ -236,10 +256,18 @@ async function startRound(token) {
 
 function completeRound(token) {
   if (token !== gameToken) return;
+  const color = rounds[currentRound].color;
   setFillProgress(1);
   playRoundBell();
+  dom.answerEnglish.textContent = color.english;
+  dom.answerRussian.textContent = color.russian;
+  dom.answer.style.setProperty("--answer-color", color.answerValue || color.value);
   dom.answer.classList.add("is-visible");
-  dom.liveStatus.textContent = `${rounds[currentRound].color.english}. ${rounds[currentRound].color.russian}.`;
+  dom.liveStatus.textContent = `${color.english}. ${color.russian}.`;
+
+  speechTimer = window.setTimeout(() => {
+    if (token === gameToken) speakColorName(color);
+  }, 420);
 
   transitionTimer = window.setTimeout(async () => {
     if (token !== gameToken) return;
