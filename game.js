@@ -9,7 +9,8 @@
  *    Программа сама найдёт область внутри замкнутого контура и закрасит её.
  */
 
-const ROUND_DURATION_MS = 15_000;
+const ROUND_DURATION_MS = 6_000;
+const ROUND_DURATION_SECONDS = Math.ceil(ROUND_DURATION_MS / 1_000);
 const ANSWER_DURATION_MS = 1_800;
 
 const COLORS = [
@@ -20,6 +21,7 @@ const COLORS = [
   { english: "BLUE", russian: "синий", value: "#198cff" },
   { english: "PURPLE", russian: "фиолетовый", value: "#8c52ff" },
   { english: "PINK", russian: "розовый", value: "#ff5ca8" },
+  { english: "BROWN", russian: "коричневый", value: "#8b5a2b" },
   { english: "WHITE", russian: "белый", value: "#ffffff", answerValue: "#ffffff" },
   { english: "BLACK", russian: "чёрный", value: "#17191f", answerValue: "#f2f4ff" },
 ];
@@ -188,8 +190,8 @@ async function startRound(token) {
   const round = rounds[currentRound];
   dom.answer.classList.remove("is-visible");
   dom.roundCounter.innerHTML = `<strong>${currentRound + 1}</strong><span>/ ${rounds.length}</span>`;
-  dom.timerValue.textContent = "15";
-  dom.timer.setAttribute("aria-label", "Осталось 15 секунд");
+  dom.timerValue.textContent = String(ROUND_DURATION_SECONDS);
+  dom.timer.setAttribute("aria-label", `Осталось ${ROUND_DURATION_SECONDS} секунд`);
   dom.answerEnglish.textContent = round.color.english;
   dom.answerRussian.textContent = round.color.russian;
   dom.answer.style.setProperty("--answer-color", round.color.answerValue || round.color.value);
@@ -205,7 +207,7 @@ async function startRound(token) {
   if (token !== gameToken) return;
   dom.liveStatus.textContent = `Раунд ${currentRound + 1}. Назовите цвет по-английски.`;
   const startedAt = performance.now();
-  let previousSeconds = 15;
+  let previousSeconds = ROUND_DURATION_SECONDS;
   playTimerTick();
 
   function tick(now) {
